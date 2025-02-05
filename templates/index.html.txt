@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR API - Image to Text</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        #output { margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h2>OCR Image to Text</h2>
+
+    <input type="file" id="imageUpload">
+    <button onclick="uploadImage()">Upload & Extract Text</button>
+
+    <br><br>
+    <input type="text" id="imageUrl" placeholder="Enter image URL">
+    <button onclick="fetchTextFromURL()">Extract from URL</button>
+
+    <div id="output"></div>
+
+    <script>
+        const API_KEY = "test-api-key-12345";
+        const API_URL = "/ocr";
+
+        function uploadImage() {
+            const fileInput = document.getElementById("imageUpload").files[0];
+            if (!fileInput) return alert("Please select an image file.");
+            
+            let formData = new FormData();
+            formData.append("image", fileInput);
+
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "x-api-key": API_KEY },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("output").innerText = "Extracted Text: " + data.text;
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
+        function fetchTextFromURL() {
+            const imageUrl = document.getElementById("imageUrl").value;
+            if (!imageUrl) return alert("Please enter an image URL.");
+
+            fetch(API_URL, {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "x-api-key": API_KEY
+                },
+                body: JSON.stringify({ "image_url": imageUrl })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("output").innerText = "Extracted Text: " + data.text;
+            })
+            .catch(error => console.error("Error:", error));
+        }
+    </script>
+</body>
+</html>
